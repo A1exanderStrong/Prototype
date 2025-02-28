@@ -60,13 +60,10 @@ namespace Prototype
             // 
             // txtLogin
             // 
-            this.txtLogin.ForeColor = System.Drawing.Color.Gray;
             this.txtLogin.Location = new System.Drawing.Point(99, 44);
             this.txtLogin.Name = "txtLogin";
             this.txtLogin.Size = new System.Drawing.Size(251, 26);
             this.txtLogin.TabIndex = 2;
-            this.txtLogin.Text = "Логин";
-            this.txtLogin.Enter += new System.EventHandler(this.placeholder_OnFocus);
             // 
             // txtPassword
             // 

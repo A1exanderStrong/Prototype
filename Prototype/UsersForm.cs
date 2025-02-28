@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Prototype.Entities;
+using Prototype.Entities.Handbooks;
 
 namespace Prototype
 {

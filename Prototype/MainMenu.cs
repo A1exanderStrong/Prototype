@@ -77,8 +77,11 @@ namespace Prototype
 
         private void resizeForm(int role)
         {
-            // second button - 78, 116
-            // third button - 78, 159
+            // second button pos - 78, 116
+            // third button pos - 78, 159
+
+            // form size +60 for each button
+            // btnBack pos = form size - 90
 
             if (role == User.ADMIN)
             {
@@ -89,8 +92,9 @@ namespace Prototype
             if (role == User.MANAGER)
             {
                 btnResourcesOnRequest.Location = new Point(78, 159);
-                btnBack.Location = new Point(78, 250);
-                Size = new Size(423, 340);
+                btnHandbook.Location = new Point(78, 202);
+                btnBack.Location = new Point(78, 310);
+                Size = new Size(423, 400);
             }
             if (role == User.USER)
             {
@@ -103,8 +107,14 @@ namespace Prototype
 
         private void buttonUsers_Click(object sender, EventArgs e)
         {
-            new UsersForm().ShowDialog();
             Hide();
+            new UsersForm().ShowDialog();
+        }
+
+        private void btnHandbook_Click(object sender, EventArgs e)
+        {
+            Hide();
+            new HandbooksForm().ShowDialog();
         }
     }
 }

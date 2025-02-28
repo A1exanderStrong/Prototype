@@ -37,11 +37,12 @@ namespace Prototype
             this.btnSendResource = new System.Windows.Forms.Button();
             this.btnResourcesOnRequest = new System.Windows.Forms.Button();
             this.btnResourcesOwned = new System.Windows.Forms.Button();
+            this.btnHandbook = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnBack
             // 
-            this.btnBack.Location = new System.Drawing.Point(78, 354);
+            this.btnBack.Location = new System.Drawing.Point(78, 392);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(249, 37);
             this.btnBack.TabIndex = 6;
@@ -116,11 +117,22 @@ namespace Prototype
             this.btnResourcesOwned.Text = "Приобретённые ресурсы";
             this.btnResourcesOwned.UseVisualStyleBackColor = true;
             // 
+            // btnHandbook
+            // 
+            this.btnHandbook.Location = new System.Drawing.Point(78, 331);
+            this.btnHandbook.Name = "btnHandbook";
+            this.btnHandbook.Size = new System.Drawing.Size(249, 37);
+            this.btnHandbook.TabIndex = 15;
+            this.btnHandbook.Text = "Справочники";
+            this.btnHandbook.UseVisualStyleBackColor = true;
+            this.btnHandbook.Click += new System.EventHandler(this.btnHandbook_Click);
+            // 
             // MainMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 401);
+            this.ClientSize = new System.Drawing.Size(407, 441);
+            this.Controls.Add(this.btnHandbook);
             this.Controls.Add(this.btnResourcesOwned);
             this.Controls.Add(this.btnResourcesOnRequest);
             this.Controls.Add(this.btnSendResource);
@@ -153,5 +165,6 @@ namespace Prototype
         private System.Windows.Forms.Button btnSendResource;
         private System.Windows.Forms.Button btnResourcesOnRequest;
         private System.Windows.Forms.Button btnResourcesOwned;
+        private System.Windows.Forms.Button btnHandbook;
     }
 }

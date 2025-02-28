@@ -56,13 +56,5 @@ namespace Prototype
             isPasswordVisible = !isPasswordVisible;
             togglePassword();
         }
-
-        private void placeholder_OnFocus(object sender, EventArgs e)
-        {
-            //if ()
-            //{
-
-            //}
-        }
     }
 }

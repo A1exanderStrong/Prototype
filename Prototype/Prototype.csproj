@@ -51,6 +51,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEditHandbook.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddEditHandbook.Designer.cs">
+      <DependentUpon>AddEditHandbook.cs</DependentUpon>
+    </Compile>
     <Compile Include="AppData.cs" />
     <Compile Include="AuthForm.cs">
       <SubType>Form</SubType>
@@ -65,10 +71,17 @@
       <DependentUpon>CheckResourcesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Connection.cs" />
-    <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\Handbooks\Category.cs" />
+    <Compile Include="Entities\Handbooks\Handbook.cs" />
     <Compile Include="Entities\Resource.cs" />
-    <Compile Include="Entities\Role.cs" />
+    <Compile Include="Entities\Handbooks\Role.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="HandbooksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HandbooksForm.Designer.cs">
+      <DependentUpon>HandbooksForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainMenu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,11 +112,17 @@
     <Compile Include="UsersForm.Designer.cs">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddEditHandbook.resx">
+      <DependentUpon>AddEditHandbook.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AuthForm.resx">
       <DependentUpon>AuthForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CheckResourcesForm.resx">
       <DependentUpon>CheckResourcesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HandbooksForm.resx">
+      <DependentUpon>HandbooksForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>

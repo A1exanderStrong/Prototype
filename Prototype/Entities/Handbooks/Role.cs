@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Prototype.Entities
+namespace Prototype.Entities.Handbooks
 {
-    public class Role
+    public partial class Role : Handbook
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+
     }
 }

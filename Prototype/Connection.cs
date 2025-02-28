@@ -15,6 +15,7 @@ using System.Windows.Forms.VisualStyles;
 using MySql.Data.MySqlClient;
 using Prototype.Entities;
 using Prototype.Properties;
+using Prototype.Entities.Handbooks;
 
 namespace Prototype
 {
@@ -342,13 +343,70 @@ namespace Prototype
             return roles;
         }
 
+
+        /// <summary>
+        /// Получает наименования из указанного в параметре справочника. Справочник - таблица содержащая только id и name
+        /// </summary>
+        /// <param name="handbook"></param>
+        /// <returns></returns>
+        public static List<Handbook> GetHandbookData(string handbook)
+        {
+            List<Handbook> data = new List<Handbook>();
+            using (var con = new MySqlConnection(conString))
+            {
+                con.Open();
+                string sql = $"SELECT * FROM {handbook}";
+                var cmd = new MySqlCommand(sql, con);
+                using (var reader = cmd.ExecuteReader())
+                while (reader.Read())
+                    {
+                        data.Add(new Handbook
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("name")
+                        });
+                    }
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// Создаёт в базе данных запись из объекта справочника.
+        /// </summary>
+        /// <param name="handbook"></param>
+        public static void CreateHandbookItem(string handbook, Handbook item)
+        {
+            using (var con = new MySqlConnection(conString))
+            {
+                con.Open();
+                string sql = $"INSERT INTO {handbook} (name) VALUES (@Name)";
+
+                var cmd = new MySqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("Name", item.Name);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void UpdateHandbookItem(string handbook, Handbook item)
+        {
+            using (var con = new MySqlConnection(conString))
+            {
+                con.Open();
+                string sql = $"UPDATE {handbook} SET name=@Name";
+
+                var cmd = new MySqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("Name", item.Name);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public async static Task<List<Resource>> GetOwningResources(int user_id)
         {
             List<Resource> resources = new List<Resource>(); 
             using (var con = new MySqlConnection(conString))
             {
                 con.Open();
-
+                // IDEA: use innerjoin somwhere here
                 string sql = $"SELECT * FROM `resources_owners` WHERE `user_id`={user_id}";
                 var cmd = new MySqlCommand(sql, con); // получаем id всех ресурсов, которыми владеет пользователь
                 await Task.Run(() =>
