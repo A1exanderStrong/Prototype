@@ -15,20 +15,20 @@ namespace Prototype
     {
         private string[] modes = { "edit", "add" };
         private int activeMode = 0;
-        private string activeHandbook = "";
-        private string activeName = "";
+        private string table = "";
+        private Handbook activeHandbook;
 
         /// <summary>
         /// Добавляет или редактирует в зависимости от режима запись в справочнике. 0 - режим редактирования, 1 - режим добавления
         /// </summary>
         /// <param name="handbook"></param>
         /// <param name="mode"></param>
-        public AddEditHandbook(string handbook, int mode, string name = "")
+        public AddEditHandbook(string table, int mode, Handbook hbook = null)
         {
             InitializeComponent();
-            activeHandbook = handbook;
+            this.table = table;
             activeMode = mode;
-            activeName = name;
+            activeHandbook = hbook;
         }
 
         private void btnAddApply_Click(object sender, EventArgs e)
@@ -36,12 +36,14 @@ namespace Prototype
             switch (modes[activeMode]) 
             {
                 case "edit":
-                    Connection.UpdateHandbookItem(activeHandbook, new Handbook { Name = txtName.Text });
+                    if (activeHandbook == null) { std.error("При получении объекта справочника возникла ошибка."); return; }
+                    activeHandbook.Name = txtName.Text;
+                    Connection.UpdateHandbookItem(table, activeHandbook);
                     std.info("Запись успешно обновлена");
                     Close();
                     break;
                 case "add":
-                    Connection.CreateHandbookItem(activeHandbook, new Handbook { Name = txtName.Text });
+                    Connection.CreateHandbookItem(table, new Handbook { Name = txtName.Text });
                     std.info("Запись успешно создана");
                     Close();
                     break;
@@ -50,7 +52,7 @@ namespace Prototype
 
         private void AddEditHandbook_Load(object sender, EventArgs e)
         {
-            txtName.Text = activeName;
+            txtName.Text = activeHandbook == null ? "" : activeHandbook.Name;
             if (modes[activeMode] == "edit") btnAddApply.Text = "Применить";
             if (modes[activeMode] == "add") btnAddApply.Text = "Добавить";
         }

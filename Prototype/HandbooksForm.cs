@@ -15,10 +15,10 @@ namespace Prototype
 {
     public partial class HandbooksForm : Form
     {
-        private string[] handbooksList = new string[] { "Выберите справочник", 
-                                                        "Категории", 
+        private string[] handbooksList = new string[] { "Категории", 
                                                         "Роли" };
         private int rowsHeight = 30;
+        private List<Handbook> handbook_data;
 
         public HandbooksForm()
         {
@@ -28,11 +28,12 @@ namespace Prototype
         private void HandbooksForm_FormClosing(object sender, FormClosingEventArgs e) => std.AppExit(e);
 
         private void HandbooksForm_Load(object sender, EventArgs e)
-        {
+        {            
+            createColumns();
+
             comboBoxHandbooks.Items.AddRange(handbooksList);
             comboBoxHandbooks.SelectedIndex = 0;
 
-            createColumns();
             updateRows();
         }
 
@@ -40,7 +41,7 @@ namespace Prototype
         {
             var namecol = new DataGridViewTextBoxColumn
             {
-                Name = "Наименование",
+                Name = " ",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };
 
@@ -49,8 +50,8 @@ namespace Prototype
 
         private string GetSelectedHandbook()
         {
-            if (comboBoxHandbooks.SelectedIndex == 1) { return "categories"; }
-            if (comboBoxHandbooks.SelectedIndex == 2) { return "roles"; }
+            if (comboBoxHandbooks.SelectedIndex == 0) { return "categories"; }
+            if (comboBoxHandbooks.SelectedIndex == 1) { return "roles"; }
             return "none";
         }
 
@@ -59,10 +60,12 @@ namespace Prototype
             dgv.Rows.Clear();
             dgv.RowTemplate.Height = rowsHeight;
             if (GetSelectedHandbook() == "none") return;
-
-            var handbook = Connection.GetHandbookData(GetSelectedHandbook());
-            foreach (var item in handbook)
+            
+            handbook_data = Connection.GetHandbookData(GetSelectedHandbook());
+            foreach (var item in handbook_data)
                 dgv.Rows.Add(item.Name);
+
+            updateAutoCompleteSource();
         }
 
         private void btnBack_Click(object sender, EventArgs e)
@@ -81,6 +84,23 @@ namespace Prototype
 
         }
 
+        private void updateAutoCompleteSource()
+        {
+            var source = new AutoCompleteStringCollection();
+            foreach (Handbook item in handbook_data)
+            {
+                var suggestionBundle = "";
+                foreach (string word in item.Name.Split(' '))
+                {
+                    suggestionBundle += $"{word}";
+                    if (source.Contains(suggestionBundle)) continue;
+                    source.Add(suggestionBundle);
+                    suggestionBundle += " ";
+                }
+            }
+            txtName.AutoCompleteCustomSource = source;
+        }
+
         private void dgv_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -97,9 +117,9 @@ namespace Prototype
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            std.info($"{dgv.SelectedRows.Count}");
-            var temp = dgv.SelectedRows[0].Cells["Наименование"].Value.ToString();
-            new AddEditHandbook(GetSelectedHandbook(), 0, temp).ShowDialog();
+            var temp = dgv.SelectedRows[0].Cells[" "].Value.ToString();
+            Handbook selectedHandbook = Connection.GetHandbookItem(GetSelectedHandbook(), temp);
+            new AddEditHandbook(GetSelectedHandbook(), 0, selectedHandbook).ShowDialog();
             updateRows();
         }
 

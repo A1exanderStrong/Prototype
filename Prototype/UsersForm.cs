@@ -157,7 +157,6 @@ namespace Prototype
         {
             _name = txtUserLogin.Text;
             if (_name.Length >= 3 || _name.Length == 0) ReloadPage();
-            //updateRows();
         }
 
         private void UsersForm_FormClosing(object sender, FormClosingEventArgs e) => std.AppExit(e);

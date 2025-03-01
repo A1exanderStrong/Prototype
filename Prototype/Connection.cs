@@ -389,15 +389,41 @@ namespace Prototype
 
         public static void UpdateHandbookItem(string handbook, Handbook item)
         {
+            try { 
             using (var con = new MySqlConnection(conString))
             {
                 con.Open();
-                string sql = $"UPDATE {handbook} SET name=@Name";
+                string sql = $"UPDATE {handbook} SET name=@Name WHERE id=@Id";
 
                 var cmd = new MySqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("Name", item.Name);
+                cmd.Parameters.AddWithValue("Id", item.Id);
                 cmd.ExecuteNonQuery();
             }
+            }
+            catch { throw; }
+        }
+
+        public static Handbook GetHandbookItem(string table, string name)
+        {
+            using (var con = new MySqlConnection(conString))
+            {
+                con.Open();
+
+                string sql = $"SELECT * FROM {table} WHERE name=@Name";
+                var cmd = new MySqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("Name", name);
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                    {
+                        return new Handbook
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("name")
+                        };
+                    }
+            }
+            return null;
         }
 
         public async static Task<List<Resource>> GetOwningResources(int user_id)
