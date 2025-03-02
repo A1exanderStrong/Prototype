@@ -16,15 +16,31 @@ using MySql.Data.MySqlClient;
 using Prototype.Entities;
 using Prototype.Properties;
 using Prototype.Entities.Handbooks;
+using System.Linq.Expressions;
+using System.CodeDom;
 
 namespace Prototype
 {
     public static class Connection
     {
-        public const string host = "localhost";
-        public const string database = "prototype";
-        public const string usr = "root";
-        public const string pwd = "root";
+        // ------------------------ IFNINITY FREE ------------------------ 
+        //public const string host = "sql109.infinityfree.com";
+        //public const string database = "if0_38430818_prototype";
+        //public const string usr = "if0_38430818";
+        //public const string pwd = "mqiFkE3p5xnhgb";
+
+        // ------------------------ FREEDB TECH ------------------------ 
+        public const string host = "sql.freedb.tech";
+        public const string database = "freedb_prototype";
+        public const string usr = "freedb_main-user";
+        public const string pwd = "c?D#mUsCTyFR2y4";
+
+        // ------------------------ LOCAL ------------------------
+        //public const string host = "localhost";
+        //public const string database = "prototype";
+        //public const string usr = "root";
+        //public const string pwd = "root";
+
         public static string conString = $"host={host};uid={usr};pwd={pwd};database={database}";
 
 
@@ -42,8 +58,8 @@ namespace Prototype
                 return true;
             }
             catch {
-                //throw; }
-                return false; }
+                throw; }
+                //return false; }
         }
 
         /// <summary>
@@ -93,7 +109,6 @@ namespace Prototype
             using(var con = new MySqlConnection(conString))
             {
                 con.Open();
-                var user = new User();
                 string sql = $"SELECT * FROM `users` WHERE id={id}";
                 var cmd = new MySqlCommand(sql, con);
                 using (var reader = cmd.ExecuteReader())
@@ -164,124 +179,82 @@ namespace Prototype
                 });
             }
             return users;
-        } 
-        
-        /// <summary>
-        /// Параметры поиска ресурсов.
-        /// Необходимо предварительно проверить возможность подключения методом test()
-        /// </summary>
-        /// <param name="name">Поиск по имени / названию ресурса</param>
-        /// <param name="sort">Сортировка по ...</param>
-        /// <param name="limit">Количество ресурсов, на странице</param>
-        /// <param name="offset">Количество пропускаемых ресурсов</param>
-        /// <returns></returns>
-        public static List<Resource> SearchResources(string name = "", string category = "", string sort = "", int limit = -1, int offset = -1, bool reverse_sort = false)
-        {
-            string select = $"SELECT * FROM `resources`";
-            string _search = $"WHERE `name` LIKE '{name}%'";
-            string _category01 = $"AND `category`={category}";
-            string _category02 = $"WHERE `category`={category}";
-            string _sort = $"ORDER BY {sort}";
-            string _limit = $"LIMIT {limit}";
-            string _offset = $"OFFSET {offset}";
-
-            string sql = select;
-
-            bool name_not_empty = !name.Equals(string.Empty);
-            bool category_not_empty = !category.Equals(string.Empty);
-            bool sort_not_empty = !sort.Equals(string.Empty);
-
-            if (name_not_empty)                         sql += $" {_search}";
-
-            if (name_not_empty && category_not_empty)     sql += $" {_category01}";
-            else if (category_not_empty)                  sql += $" {_category02}";
-
-            if (sort_not_empty && reverse_sort)         sql += $" {_sort} DESC";
-            else if (sort_not_empty)                    sql += $" {_sort}";
-
-            if (limit != -1)                            sql += $" {_limit}";
-            if (offset != -1)                           sql += $" {_offset}";
-
-            // string sql = $"{select} {_search} {_category} {_sort} {limits};";
-            List<Resource> resources = new List<Resource>();
-
-            using (var con = new MySqlConnection(conString)) 
-            {
-                con.Open();
-                MySqlCommand cmd = new MySqlCommand(sql, con);
-
-                using (var reader = cmd.ExecuteReader())
-                while (reader.Read())
-                {
-                        var resource = new Resource
-                        {
-                            Name = reader.GetString("name"),
-                            Description = reader.GetString("description"),
-                            CategoryId = reader.GetInt32("category"),
-                            Price = reader.GetFloat("price"),
-                            PublicationDate = reader.GetDateTime("publication_date"),
-                            CreatedByUserId = reader.GetInt32("created_by"),
-                            Picture = std.GetWebImage(reader.GetString("picture"))
-                        };
-
-                        resources.Add(resource);
-                }
-            }
-            return resources;
         }
 
-        public async static Task<List<Resource>> SearchResourcesAsync(string name = "", string category = "", string sort = "", int limit = -1, int offset = -1, bool reverse_sort = false)
+        public async static Task<List<Resource>> GetResources(string name = "", string category = "", string sort = "", int limit = -1, int offset = -1, bool reverse_sort = false, int user_id = -1)
         {
             string select = $"SELECT * FROM `resources`";
-            string _search = $"WHERE `name` LIKE '%{name}%'";
+            // выбираем все ресурсы из resources_owners в которых id пользователя равен указанному в параметре.
+            string select02 = "SELECT * FROM `resources`, `resources_owners` " +
+                               $"WHERE `resources_owners`.`user_id`={user_id} AND " +
+                               $"`resources_owners`.`resource_id`=`resources`.`id`";
+            string _search = $"AND `resources`.`name` LIKE '%{name}%'";
+            string _search02 = $"WHERE `resources`.`name` LIKE '%{name}%'";
             string _category01 = $"AND `category`={category}";
             string _category02 = $"WHERE `category`={category}";
             string _sort = $"ORDER BY {sort}";
             string _limit = $"LIMIT {limit}";
             string _offset = $"OFFSET {offset}";
 
-            string sql = select;
+            string sql = "";
+
+            if (user_id != -1) sql = select02;
+            if (user_id == -1) sql = select;
 
             bool name_not_empty = !name.Equals(string.Empty);
             bool category_not_empty = !category.Equals(string.Empty);
             bool sort_not_empty = !sort.Equals(string.Empty);
+            bool uid_filter_active = user_id != -1;
 
-            if (name_not_empty) sql += $" {_search}";
+            if (name_not_empty)
+            {
+                if (uid_filter_active) sql += $" {_search}";
+                if (!uid_filter_active) sql += $" {_search02}";
+            }
 
-            if (name_not_empty && category_not_empty) sql += $" {_category01}";
-            else if (category_not_empty) sql += $" {_category02}";
+            if (category_not_empty)
+            {
+                if (name_not_empty || uid_filter_active) sql += $" {_category01}";
+                else sql += $" {_category02}";
+            }
 
-            if (sort_not_empty && reverse_sort) sql += $" {_sort} DESC";
-            else if (sort_not_empty) sql += $" {_sort}";
+            if (sort_not_empty)
+            {
+                if (reverse_sort) sql += $" {_sort} DESC";
+                else sql += $" {_sort}";
+            }
 
             if (limit != -1) sql += $" {_limit}";
             if (offset != -1) sql += $" {_offset}";
 
-            // string sql = $"{select} {_search} {_category} {_sort} {limits};";
+            //std.info(sql);
+
             List<Resource> resources = new List<Resource>();
+            await Task.Run(() => { 
+                using (var con = new MySqlConnection(conString))
+                {
+                    con.Open();
+                    MySqlCommand cmd = new MySqlCommand(sql, con);
 
-            using (var con = new MySqlConnection(conString))
-            {
-                con.Open();
-                MySqlCommand cmd = new MySqlCommand(sql, con);
-
-                using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
-                    {
-                        var resource = new Resource
+                    using (var reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            Name = reader.GetString("name"),
-                            Description = reader.GetString("description"),
-                            CategoryId = reader.GetInt32("category"),
-                            Price = reader.GetFloat("price"),
-                            PublicationDate = reader.GetDateTime("publication_date"),
-                            CreatedByUserId = reader.GetInt32("created_by"),
-                            Picture = await std.GetWebImageAsync(reader.GetString("picture"))
-                        };
+                            var resource = new Resource
+                            {
+                                Id = reader.GetInt32("id"),
+                                Name = reader.GetString("name"),
+                                Description = reader.GetString("description"),
+                                CategoryId = reader.GetInt32("category"),
+                                Price = reader.GetFloat("price"),
+                                PublicationDate = reader.GetDateTime("publication_date"),
+                                CreatedByUserId = reader.GetInt32("created_by"),
+                                Picture = std.GetWebImage(reader.GetString("picture"))
+                            };
 
-                        resources.Add(resource);
-                    }
-            }
+                            resources.Add(resource);
+                        }
+                }
+            });
             return resources;
         }
 
@@ -343,7 +316,34 @@ namespace Prototype
             return roles;
         }
 
+        public static Resource GetResource(string name)
+        {
+            using (var con = new MySqlConnection(conString))
+            {
+                con.Open();
 
+                string sql = $"SELECT * FROM `resources` WHERE name=@Name";
+                var cmd = new MySqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("Name", name);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    reader.Read();
+                    return new Resource
+                    {
+                        Id = reader.GetInt32("id"),
+                        Name = reader.GetString("name"),
+                        Description = reader.GetString("description"),
+                        CategoryId = reader.GetInt32("category"),
+                        Price = reader.GetFloat("price"),
+                        PublicationDate = reader.GetDateTime("publication_date"),
+                        CreatedByUserId = reader.GetInt32("created_by"),
+                        Picture = std.GetWebImage(reader.GetString("picture"))
+                    };
+                }
+            }
+        }
+
+        #region Handbooks
         /// <summary>
         /// Получает наименования из указанного в параметре справочника. Справочник - таблица содержащая только id и name
         /// </summary>
@@ -425,43 +425,6 @@ namespace Prototype
             }
             return null;
         }
-
-        public async static Task<List<Resource>> GetOwningResources(int user_id)
-        {
-            List<Resource> resources = new List<Resource>(); 
-            using (var con = new MySqlConnection(conString))
-            {
-                con.Open();
-                // IDEA: use innerjoin somwhere here
-                string sql = $"SELECT * FROM `resources_owners` WHERE `user_id`={user_id}";
-                var cmd = new MySqlCommand(sql, con); // получаем id всех ресурсов, которыми владеет пользователь
-                await Task.Run(() =>
-                {
-                    using (var reader = cmd.ExecuteReader())
-                        while (reader.Read())
-                        {
-                            int resource_id = reader.GetInt32("resource_id");
-                            string sql2 = $"SELECT * FROM `resources` WHERE id={resource_id}";
-                            var cmd2 = new MySqlCommand(sql2, con); // получаем подробную инфу о ресурсе
-                            var reader2 = cmd2.ExecuteReader();
-                            reader2.Read();
-                            var resImageUrl = reader.GetString("picture");
-                            resources.Add(new Resource
-                            {
-                                Id = resource_id,
-                                Name = reader2.GetString("name"),
-                                Description = reader2.GetString("description"),
-                                Picture = std.GetWebImage(resImageUrl),
-                                Price = reader2.GetFloat("price"),
-                                CategoryId = reader2.GetInt32("category"),
-                                CreatedByUserId = reader2.GetInt32("created_by"),
-                                PublicationDate = reader2.GetDateTime("publication_date")
-                            });
-                            reader2.Close();
-                        }
-                });
-            }
-            return resources;
-        }
+        #endregion
     }
 }

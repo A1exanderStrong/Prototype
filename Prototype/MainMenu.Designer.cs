@@ -116,6 +116,7 @@ namespace Prototype
             this.btnResourcesOwned.TabIndex = 14;
             this.btnResourcesOwned.Text = "Приобретённые ресурсы";
             this.btnResourcesOwned.UseVisualStyleBackColor = true;
+            this.btnResourcesOwned.Click += new System.EventHandler(this.btnResourcesOwned_Click);
             // 
             // btnHandbook
             // 

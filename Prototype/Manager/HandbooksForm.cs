@@ -34,6 +34,8 @@ namespace Prototype
             comboBoxHandbooks.Items.AddRange(handbooksList);
             comboBoxHandbooks.SelectedIndex = 0;
 
+            btnEdit.Enabled = false;
+
             updateRows();
         }
 
@@ -127,6 +129,11 @@ namespace Prototype
         {
             new AddEditHandbook(GetSelectedHandbook(), 1).ShowDialog();
             updateRows();
+        }
+
+        private void dgv_SelectionChanged(object sender, EventArgs e)
+        {
+            btnEdit.Enabled = dgv.SelectedRows.Count != 0;
         }
     }
 }

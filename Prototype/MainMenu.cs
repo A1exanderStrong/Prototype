@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -115,6 +117,12 @@ namespace Prototype
         {
             Hide();
             new HandbooksForm().ShowDialog();
+        }
+
+        private void btnResourcesOwned_Click(object sender, EventArgs e)
+        {
+            Hide();
+            new OwnedResourcesForm().ShowDialog();
         }
     }
 }

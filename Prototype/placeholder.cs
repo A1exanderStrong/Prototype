@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Prototype
 {
-    class placeholder : System.Windows.Forms.TextBox
+    partial class placeholder : TextBox
     {
         private readonly System.Drawing.Color DefaultColor;
         public string PlaceHolderText { get; set; }
-        public placeholder(string text)
+        public placeholder(string init_text)
         {
             DefaultColor = ForeColor;
 
             GotFocus += (object sender, EventArgs e) =>
             {
-                Text = string.Empty;
+                if (Text == PlaceHolderText) Text = string.Empty;
                 ForeColor = DefaultColor;
             };
 
@@ -31,13 +32,24 @@ namespace Prototype
                 ForeColor = DefaultColor;
             };
 
-            if (!string.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty(init_text))
             {
                 ForeColor = System.Drawing.Color.Gray;
 
-                PlaceHolderText = text;
-                Text = text;
+                PlaceHolderText = init_text;
+                Text = init_text;
             }
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // placeholder
+            // 
+            this.Text = "9";
+            this.ResumeLayout(false);
+
         }
     }
 }

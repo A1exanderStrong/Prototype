@@ -37,9 +37,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>dll\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,37 +52,42 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddEditHandbook.cs">
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Filters.cs" />
+    <Compile Include="Manager\AddEditHandbook.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddEditHandbook.Designer.cs">
+    <Compile Include="Manager\AddEditHandbook.Designer.cs">
       <DependentUpon>AddEditHandbook.cs</DependentUpon>
     </Compile>
-    <Compile Include="AppData.cs" />
+    <Compile Include="AppLogic\AppData.cs" />
     <Compile Include="AuthForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AuthForm.Designer.cs">
       <DependentUpon>AuthForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CheckResourcesForm.cs">
+    <Compile Include="Manager\CheckResourcesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CheckResourcesForm.Designer.cs">
+    <Compile Include="Manager\CheckResourcesForm.Designer.cs">
       <DependentUpon>CheckResourcesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Connection.cs" />
+    <Compile Include="AppLogic\Connection.cs" />
     <Compile Include="Entities\Handbooks\Category.cs" />
     <Compile Include="Entities\Handbooks\Handbook.cs" />
     <Compile Include="Entities\Resource.cs" />
     <Compile Include="Entities\Handbooks\Role.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="HandbooksForm.cs">
+    <Compile Include="Manager\HandbooksForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HandbooksForm.Designer.cs">
+    <Compile Include="Manager\HandbooksForm.Designer.cs">
       <DependentUpon>HandbooksForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainMenu.cs">
@@ -91,41 +99,50 @@
     <Compile Include="placeholder.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="AppLogic\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResourceForm.cs">
+    <Compile Include="User\ResourceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ResourceForm.Designer.cs">
+    <Compile Include="User\ResourceForm.Designer.cs">
       <DependentUpon>ResourceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="std.cs" />
+    <Compile Include="AppLogic\std.cs" />
     <Compile Include="StuffForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="StuffForm.Designer.cs">
       <DependentUpon>StuffForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsersForm.cs">
+    <Compile Include="Admin\UsersForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UsersForm.Designer.cs">
+    <Compile Include="Admin\UsersForm.Designer.cs">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="AddEditHandbook.resx">
+    <Compile Include="User\OwnedResourcesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User\OwnedResourcesForm.Designer.cs">
+      <DependentUpon>OwnedResourcesForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Manager\AddEditHandbook.resx">
       <DependentUpon>AddEditHandbook.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AuthForm.resx">
       <DependentUpon>AuthForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CheckResourcesForm.resx">
+    <EmbeddedResource Include="Manager\CheckResourcesForm.resx">
       <DependentUpon>CheckResourcesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HandbooksForm.resx">
+    <EmbeddedResource Include="Manager\HandbooksForm.resx">
       <DependentUpon>HandbooksForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="placeholder.resx">
+      <DependentUpon>placeholder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -136,14 +153,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="ResourceForm.resx">
+    <EmbeddedResource Include="User\ResourceForm.resx">
       <DependentUpon>ResourceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StuffForm.resx">
       <DependentUpon>StuffForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsersForm.resx">
+    <EmbeddedResource Include="Admin\UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User\OwnedResourcesForm.resx">
+      <DependentUpon>OwnedResourcesForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

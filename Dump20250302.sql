@@ -101,6 +101,7 @@ CREATE TABLE `resources_owners` (
 
 LOCK TABLES `resources_owners` WRITE;
 /*!40000 ALTER TABLE `resources_owners` DISABLE KEYS */;
+INSERT INTO `resources_owners` VALUES (1,3,'2025-02-12'),(2,3,'2025-01-12'),(8,3,'2023-12-12');
 /*!40000 ALTER TABLE `resources_owners` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,4 +201,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-28 21:34:01
+-- Dump completed on 2025-03-02 15:58:43

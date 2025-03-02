@@ -14,7 +14,7 @@ namespace Prototype
 {
     public partial class AuthForm : Form
     {
-        bool isPasswordVisible = true;
+        bool isPasswordVisible = false;
         public AuthForm()
         {
             InitializeComponent();
@@ -24,7 +24,7 @@ namespace Prototype
         private void togglePassword()
         {
             txtPassword.UseSystemPasswordChar = !isPasswordVisible;
-            if (isPasswordVisible) 
+            if (!isPasswordVisible) 
             { 
                 pictureBox1.ImageLocation = "../../icons/hidden.png";
             }

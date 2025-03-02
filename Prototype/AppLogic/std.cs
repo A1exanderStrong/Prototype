@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Prototype.Entities;
+using Prototype.Properties;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -37,8 +39,8 @@ namespace Prototype
         {
             if (exitCalls > 0) return;
             exitCalls++;
-            var answer = std.question("Вы действительно хотите выйти?");
-            if (answer == DialogResult.No) e.Cancel = true;
+            var answer = question("Вы действительно хотите выйти?");
+            if (answer == DialogResult.No) { e.Cancel = true; exitCalls = 0; }
             if (answer == DialogResult.Yes) Application.Exit();
         }
 
@@ -66,5 +68,39 @@ namespace Prototype
         {
             return (int)Math.Ceiling((double)items_count / items_per_page);
         }
+
+        public static AutoCompleteStringCollection UpdateAutoCompleteSource(List<Entity> entities)
+        {
+            var source = new AutoCompleteStringCollection();
+            foreach (Entity ent in entities)
+            {
+                var suggestionBundle = "";
+                foreach (string word in ent.Name.Split(' '))
+                {
+                    suggestionBundle += $"{word}";
+                    if (source.Contains(suggestionBundle)) continue;
+                    source.Add(suggestionBundle);
+                    suggestionBundle += " ";
+                }
+                source.AddRange(ent.Name.Split(' '));
+            }
+            return source;
+        }
+
+        #region convertions
+        public static List<Entity> ConvertToEntity(List<Resource> resources)
+        {
+            return resources.ConvertAll(resource => (Entity)resource);
+        }
+
+        public static Entity ConvertToEntity(Resource resource) => (Entity)resource;
+
+        public static List<Entity> ConvertToEntity(List<User> users)
+        {
+            return users.ConvertAll(user => (Entity)user);
+        }
+
+        public static Entity ConvertToEntity(User user) => (Entity)user; 
+        #endregion
     }
 }

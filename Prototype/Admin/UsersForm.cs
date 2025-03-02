@@ -61,40 +61,26 @@ namespace Prototype
                 ComboBoxRoles.Items.Add(role.Name);
         }
 
-        private void updateAutoCompleteSource()
-        {
-            var source = new AutoCompleteStringCollection();
-            foreach (User user in users)
-            {
-                var suggestionBundle = "";
-                foreach (string word in user.Login.Split(' '))
-                {
-                    suggestionBundle += $"{word}";
-                    if (source.Contains(suggestionBundle)) continue;
-                    source.Add(suggestionBundle);
-                    suggestionBundle += " ";
-                }
-            }
-            txtUserLogin.AutoCompleteCustomSource = source;
-        }
-
         private async void ReloadPage()
         {
             users.Clear();
             labelUsersNotFound.Visible = false;
 
-            users = await Connection.GetUsers(_name, _role, _sort, chunckSize, offset, sort_reversed);
+            //users = await Connection.GetUsers(_name, _role, _sort, chunckSize, offset, sort_reversed);
             loaderImage.Visible = true;
+
+            var request = Connection.GetUsers(_name, _role, _sort, chunckSize, offset, sort_reversed);
             for (int i = 0; i < maxRequests; i++)
             {
-                updateRows();
-                if (users.Count > 0)
+                await request;
+                if (request.IsCompleted)
                 {
+                    users = request.Result;
                     loaderImage.Visible = false;
-                    updateAutoCompleteSource();
+                    updateRows();
                     return;
                 }
-                await Task.Delay((int)(1000 * users_update_delay));
+                //await Task.Delay((int)(1000 * users_update_delay));
             }
             loaderImage.Visible = false;
             labelUsersNotFound.Visible = true;
@@ -151,6 +137,8 @@ namespace Prototype
                     user.GetRole(),
                     user.GetRegistrationDate());
             }
+            List<Entity> entities = std.ConvertToEntity(users);
+            txtUserLogin.AutoCompleteCustomSource = std.UpdateAutoCompleteSource(entities);
         }
 
         private void txtUserName_TextChanged(object sender, EventArgs e)

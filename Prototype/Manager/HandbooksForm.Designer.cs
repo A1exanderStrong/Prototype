@@ -34,6 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnBack = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.btnEdit = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,6 +54,7 @@
             this.dgv.Size = new System.Drawing.Size(483, 399);
             this.dgv.TabIndex = 1;
             this.dgv.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_CellMouseClick);
+            this.dgv.SelectionChanged += new System.EventHandler(this.dgv_SelectionChanged);
             // 
             // comboBoxHandbooks
             // 
@@ -86,7 +88,7 @@
             // 
             // btnBack
             // 
-            this.btnBack.Location = new System.Drawing.Point(13, 500);
+            this.btnBack.Location = new System.Drawing.Point(13, 531);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(152, 34);
             this.btnBack.TabIndex = 7;
@@ -96,7 +98,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(347, 500);
+            this.btnAdd.Location = new System.Drawing.Point(347, 491);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(152, 34);
             this.btnAdd.TabIndex = 8;
@@ -104,11 +106,22 @@
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // btnEdit
+            // 
+            this.btnEdit.Location = new System.Drawing.Point(347, 531);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(152, 34);
+            this.btnEdit.TabIndex = 9;
+            this.btnEdit.Text = "Редактировать";
+            this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+            // 
             // HandbooksForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(511, 552);
+            this.ClientSize = new System.Drawing.Size(511, 580);
+            this.Controls.Add(this.btnEdit);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.label1);
@@ -137,5 +150,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnEdit;
     }
 }

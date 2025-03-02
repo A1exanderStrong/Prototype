@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -20,7 +19,7 @@ using Prototype.Entities.Handbooks;
 
 namespace Prototype
 {
-    public partial class StuffForm : Form
+    public partial class OwnedResourcesForm : Form
     {
         private const int rowsHeight = 100;
         private const int chunckSize = 20; // количество отображаемых ресурсов
@@ -28,10 +27,10 @@ namespace Prototype
         //private readonly static long resourcesCount = Connection.GetRecordsCount("resources");
         //private static int totalPages = std.CountPages(chunckSize, (int)resourcesCount);
 
+        private bool canReloadPage = true;
       
         List<Resource> resources = new List<Resource>();
         List<Category> categories = new List<Category>();
-        List<Resource> bucket = new List<Resource>();
 
         #region search params
         private string name = "";
@@ -43,13 +42,11 @@ namespace Prototype
         private float resources_update_delay = 0.5f; // в секундах
         private const int maxRequests = 20; // Максимальное количество попыток обновления списка ресурсов
 
-        public StuffForm()
+        public OwnedResourcesForm()
         {
             InitializeComponent();
             ReloadPage();
             loaderImage.ImageLocation = "https://i.gifer.com/origin/b4/b4d657e7ef262b88eb5f7ac021edda87.gif";
-            progressBar1.Maximum = chunckSize;
-            progressBar1.Visible = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -70,25 +67,43 @@ namespace Prototype
                 ComboBoxCategories.Items.Add(category.Name);
         }
 
+        private void updateAutoCompleteSource()
+        {
+            var source = new AutoCompleteStringCollection();
+            foreach (var resource in resources)
+            {
+                var suggestionBundle = "";
+                foreach (string word in resource.Name.Split(' '))
+                {
+                    suggestionBundle += $"{word}";
+                    if (source.Contains(suggestionBundle)) continue;
+                    source.Add(suggestionBundle);
+                    suggestionBundle += " ";
+                }
+                source.AddRange(resource.Name.Split(' '));
+            }
+            txtResourceName.AutoCompleteCustomSource = source;
+        }
+
         private async void ReloadPage()
         {
             resources.Clear();
             labelResourcesNotFound.Visible = false;
+
+            //resources = await Connection.GetOwningResources(name, filter, sort, chunckSize, offset, sort_reversed);
             loaderImage.Visible = true;
-            var request = Connection.GetResources(name, filter, sort, chunckSize, offset, sort_reversed);
+            var request = Connection.GetResources(name, filter, sort, chunckSize, offset, sort_reversed, AppData.ActiveUser.Id);
 
             for (int i = 0; i < maxRequests; i++)
             {
                 await request;
-                //request.Wait((int)(1000 * resources_update_delay));
-                if (request.IsCompleted) 
+                resources = request.Result;
+                if (request.IsCompleted)
                 {
-                    resources = request.Result;
                     updateRows();
                     loaderImage.Visible = false;
-                    return; 
+                    return;
                 }
-                //await Task.Delay((int)(1000 * resources_update_delay));
             }
             loaderImage.Visible = false; 
             labelResourcesNotFound.Visible = true;
@@ -101,7 +116,7 @@ namespace Prototype
             var name = new DataGridViewTextBoxColumn
             {
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
-                HeaderText = "Наименование",
+                HeaderText = "Наименование"
             };
             var category = new DataGridViewTextBoxColumn
             {
@@ -125,7 +140,7 @@ namespace Prototype
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
                 HeaderText = "Автор"
             };
-            
+
             dgv.Columns.Add(picture);
             dgv.Columns.Add(name);
             dgv.Columns.Add(category);
@@ -146,15 +161,16 @@ namespace Prototype
                             resource.Price,
                             resource.GetAuthor().Login);
             }
-            List<Entity> res = std.ConvertToEntity(resources);
-            txtResourceName.AutoCompleteCustomSource = std.UpdateAutoCompleteSource(res);
+            updateAutoCompleteSource();
         }
 
         private void txtResourceName_TextChanged(object sender, EventArgs e)
         {
-            name = txtResourceName.Text;
-            if (name.Length >= 3 || name.Length == 0) ReloadPage();
-            //updateRows();
+            if (canReloadPage)
+            {
+                name = txtResourceName.Text;
+                if (name.Length >= 3 || name.Length == 0) ReloadPage();
+            }
         }
 
         private void StuffForm_FormClosing(object sender, FormClosingEventArgs e) => std.AppExit(e);
@@ -177,27 +193,10 @@ namespace Prototype
 
         private void comboBoxSort_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int index = comboBoxSort.SelectedIndex;
-            if (index == 0) { sort = ""; ReloadPage(); return; }
-            if (index == 1 || index == 2) sort = "publication_date";
-            if (index == 3 || index == 4) sort = "price";
-            sort_reversed = index == 1 || index == 3;
+            if (comboBoxSort.SelectedIndex == 0) { sort = ""; ReloadPage(); return; }
+            sort_reversed = comboBoxSort.SelectedIndex == 1;
+            sort = "publication_date";
             ReloadPage();
-        }
-
-        private void buttonAddToBucket_Click(object sender, EventArgs e)
-        {
-            // CHECK FOR "NAME" COLUMN POSITION
-            var selectedRow = dgv.SelectedRows[0].Cells[1].Value.ToString();
-            Resource selectedResource = Connection.GetResource(selectedRow);
-            if (selectedResource == null) return;
-            bucket.Add(selectedResource);
-            string msg = "";
-            foreach (Resource resource in bucket)
-            {
-                msg += $"{resource.Id}: {resource.Name}, {resource.Price}\n";
-            }
-            std.info(msg);
         }
     }
 }
